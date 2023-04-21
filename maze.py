@@ -1,3 +1,5 @@
+from asyncio.windows_events import NULL
+from tarfile import NUL
 import pygame
 import random
 import math
@@ -21,30 +23,45 @@ T_piece = pygame.image.load("T_piece.png").convert_alpha()
 L_piece = pygame.image.load("L_piece.png").convert_alpha()
 I_piece = pygame.image.load("I_piece.png").convert_alpha()
 end_piece = pygame.image.load("end_piece.png").convert_alpha()
-
-#temporary function
-def random_piece():
-    a = math.floor(random.random() * 5)
-    if (a == 0):
-        return X_piece
-    if (a == 1):
-        return T_piece
-    if (a == 2):
-        return L_piece
-    if (a == 3):
-        return I_piece
-    if (a == 4):
-        return end_piece
-    return random_piece()
+empty_piece = pygame.Surface((grid_x, grid_y), flags = pygame.SRCALPHA)
 
 #fill in grid
 for x in range(grid_x):
     grid.append([])
     for y in range(grid_y):
-        grid[x].append(random_piece())
+        grid[x].append(empty_piece)
+
+
+#creates easily accesible rotations for sprites
+def create_rotations(sprite):
+    temp = [NULL, NULL, NULL, NULL]
+    temp[0] = sprite
+    temp[1] = pygame.transform.rotate(sprite, 90)
+    temp[2] = pygame.transform.rotate(sprite, 180)
+    temp[3] = pygame.transform.rotate(sprite, 270)
+    return temp
+
+X_piece = create_rotations(X_piece)
+T_piece = create_rotations(T_piece)
+L_piece = create_rotations(L_piece)
+I_piece = create_rotations(I_piece)
+end_piece = create_rotations(end_piece)
+
+#generates a new entrance
+def new_entrance():
+    if (round(random.random()) == 1):
+        a = round(random.random())
+        grid[a * (grid_x - 1)][math.floor(random.random() * grid_y)] = end_piece[(1 - a) * 2 + 1]
+    else:
+        a = round(random.random())
+        grid[math.floor(random.random() * grid_x)][a * (grid_y - 1)] = end_piece[(1 - a) * 2]
+
 
 def gameLoop():
     game_over = False
+    
+    new_entrance()
+    new_entrance()
 
     while not game_over:
         for event in pygame.event.get():
@@ -56,7 +73,7 @@ def gameLoop():
         #Your Code
         for x in range(grid_x):
             for y in range(grid_y):
-                dis.blit(pygame.transform.rotate(grid[x][y], round(math.sqrt(x  * 24 + y * 24)) * 90), [x  * 24, y * 24])
+                dis.blit(grid[x][y], [x  * 24, y * 24])
 
         pygame.display.update()
         clock.tick(30)
