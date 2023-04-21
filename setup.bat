@@ -1,0 +1,2 @@
+python maze.py
+pause
