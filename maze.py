@@ -222,15 +222,32 @@ def new_entrance():
         y = a * (grid_y - 1)
         grid[x][y] = add_pieces(grid[x][y], end_piece[(1 - a) * 2])
 
+#generates a path between two conecting tiles
+#rot value is for rotation (0 - down; 1 - right; 2 - up; 3 - left)
+def path(x, y, rot):
+    if (rot < 0 or rot >= 4 or x < 0 or x >= grid_x or y < 0 or y >= grid_y):
+        return
+    if (rot >= 2):
+        path(x+(2-rot), y+(rot-3), rot - 2)
+        return
+
+    grid[x][y] = add_pieces(grid[x][y], end_piece[rot])
+    grid[x+rot][y+(1-rot)] = add_pieces(grid[x+rot][y+(1-rot)], end_piece[rot+2])
+
 def gameLoop():
     game_over = False
     
-    for x in range(4):
-        for y in range(4):
-            grid[x * 2 + 1][y * 4 + 1] = add_pieces(T_piece[x], end_piece[y])
-            grid[x * 2 + 1][y * 4 + 2] = T_piece[x]
-            grid[x * 2 + 1][y * 4 + 3] = end_piece[y]
+    #for x in range(4):
+    #    for y in range(4):
+    #        grid[x * 2 + 1][y * 4 + 1] = add_pieces(T_piece[x], end_piece[y])
+    #        grid[x * 2 + 1][y * 4 + 2] = T_piece[x]
+    #        grid[x * 2 + 1][y * 4 + 3] = end_piece[y]
     
+    path(1,1,0)
+    path(1,2,1)
+    path(2,2,0)
+    path(2,3,3)
+
     new_entrance()
     new_entrance()
     
