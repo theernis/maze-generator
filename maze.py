@@ -18,12 +18,19 @@ pygame.display.set_caption('maze')
 clock = pygame.time.Clock()
 
 #load images
-X_piece = pygame.image.load("X_piece.png").convert_alpha()
-T_piece = pygame.image.load("T_piece.png").convert_alpha()
-I_piece = pygame.image.load("I_piece.png").convert_alpha()
-L_piece = pygame.image.load("L_piece.png").convert_alpha()
-end_piece = pygame.image.load("end_piece.png").convert_alpha()
-empty_piece = pygame.Surface((grid_x, grid_y), flags = pygame.SRCALPHA)
+X_tile = pygame.image.load("X_piece.png").convert_alpha()
+T_tile = pygame.image.load("T_piece.png").convert_alpha()
+I_tile = pygame.image.load("I_piece.png").convert_alpha()
+L_tile = pygame.image.load("L_piece.png").convert_alpha()
+end_tile = pygame.image.load("end_piece.png").convert_alpha()
+empty_tile = pygame.Surface((grid_x, grid_y), flags = pygame.SRCALPHA)
+
+X_piece = [[5,0],[5,1],[5,2],[5,3]]
+T_piece = [[4,0],[4,1],[4,2],[4,3]]
+I_piece = [[3,0],[3,1],[3,2],[3,3]]
+L_piece = [[2,0],[2,1],[2,2],[2,3]]
+end_piece = [[1,0],[1,1],[1,2],[1,3]]
+empty_piece = [0,0]
 
 
 #fill in grid
@@ -35,167 +42,161 @@ for x in range(grid_x):
 
 #creates easily accesible rotations for sprites
 def create_rotations(sprite):
-    temp = [NULL, NULL, NULL, NULL]
-    temp[0] = sprite
-    temp[1] = pygame.transform.rotate(sprite, 90)
-    temp[2] = pygame.transform.rotate(sprite, 180)
-    temp[3] = pygame.transform.rotate(sprite, 270)
+    temp = []
+    for angle in range(4):
+      temp.append(pygame.transform.rotate(sprite, angle * 90))
     return temp
 
-X_piece = create_rotations(X_piece)
-T_piece = create_rotations(T_piece)
-I_piece = create_rotations(I_piece)
-L_piece = create_rotations(L_piece)
-end_piece = create_rotations(end_piece)
+X_tile = create_rotations(X_tile)
+T_tile = create_rotations(T_tile)
+I_tile = create_rotations(I_tile)
+L_tile = create_rotations(L_tile)
+end_tile = create_rotations(end_tile)
 
-
-#compares two surfaces returns true or false
-def compare_surface(piece1, piece2):
-    return (str(pygame.PixelArray(piece1)) == str(pygame.PixelArray(piece2)))
 
 #adds two pieces to form another
 def add_pieces(piece1, piece2):
     #basic adding
-    if (compare_surface(piece1, piece2)):
+    if (piece1 == piece2):
         return piece1
-    if (compare_surface(piece1, X_piece[0]) or compare_surface(piece2, X_piece[0])):
+    if (piece1[0] == 5 or piece2[0] == 5):
         return X_piece[math.floor(random.random() * 4)]
-    if (compare_surface(piece1, empty_piece)):
+    if (piece1[0] == 0):
         return piece2
-    if (compare_surface(piece2, empty_piece)):
+    if (piece2[0] == 0):
         return piece1
     
     #making sure there end piece at the start
-    if (compare_surface(piece2, end_piece[0]) or compare_surface(piece2, end_piece[1]) or compare_surface(piece2, end_piece[2]) or compare_surface(piece2, end_piece[3])):
-        if not(compare_surface(piece1, end_piece[0]) or compare_surface(piece1, end_piece[1]) or compare_surface(piece1, end_piece[2]) or compare_surface(piece1, end_piece[3])):
+    if (piece2[0] == 1):
+        if not(piece1[0] == 1):
             return add_pieces(piece2, piece1)
 
     #end-end adding
-    if (compare_surface(piece1, end_piece[0]) and compare_surface(piece2, end_piece[1])):
+    if (piece1 == end_piece[0] and piece2 == end_piece[1]):
         return L_piece[3]
-    if (compare_surface(piece1, end_piece[0]) and compare_surface(piece2, end_piece[2])):
+    if (piece1 == end_piece[0] and piece2 == end_piece[2]):
         return I_piece[round(random.random()) * 2]
-    if (compare_surface(piece1, end_piece[0]) and compare_surface(piece2, end_piece[3])):
+    if (piece1 == end_piece[0] and piece2 == end_piece[3]):
         return L_piece[2]
-    if (compare_surface(piece1, end_piece[1]) and compare_surface(piece2, end_piece[0])):
+    if (piece1 == end_piece[1] and piece2 == end_piece[0]):
         return L_piece[3]
-    if (compare_surface(piece1, end_piece[1]) and compare_surface(piece2, end_piece[2])):
+    if (piece1 == end_piece[1] and piece2 == end_piece[2]):
         return L_piece[0]
-    if (compare_surface(piece1, end_piece[1]) and compare_surface(piece2, end_piece[3])):
+    if (piece1 == end_piece[1] and piece2 == end_piece[3]):
         return I_piece[round(random.random()) * 2 + 1]
-    if (compare_surface(piece1, end_piece[2]) and compare_surface(piece2, end_piece[0])):
+    if (piece1 == end_piece[2] and piece2 == end_piece[0]):
         return I_piece[round(random.random()) * 2]
-    if (compare_surface(piece1, end_piece[2]) and compare_surface(piece2, end_piece[1])):
+    if (piece1 == end_piece[2] and piece2 == end_piece[1]):
         return L_piece[0]
-    if (compare_surface(piece1, end_piece[2]) and compare_surface(piece2, end_piece[3])):
+    if (piece1 == end_piece[2] and piece2 == end_piece[3]):
         return L_piece[1]
-    if (compare_surface(piece1, end_piece[3]) and compare_surface(piece2, end_piece[0])):
+    if (piece1 == end_piece[3] and piece2 == end_piece[0]):
         return L_piece[2]
-    if (compare_surface(piece1, end_piece[3]) and compare_surface(piece2, end_piece[1])):
+    if (piece1 == end_piece[3] and piece2 == end_piece[1]):
         return I_piece[round(random.random()) * 2 + 1]
-    if (compare_surface(piece1, end_piece[3]) and compare_surface(piece2, end_piece[2])):
+    if (piece1 == end_piece[3] and piece2 == end_piece[2]):
         return L_piece[1]
 
     #end-L adding
-    if (compare_surface(piece1, end_piece[0]) and compare_surface(piece2, L_piece[0])):
+    if (piece1 == end_piece[0] and piece2 == L_piece[0]):
         return T_piece[1]
-    if (compare_surface(piece1, end_piece[0]) and compare_surface(piece2, L_piece[1])):
+    if (piece1 == end_piece[0] and piece2 == L_piece[1]):
         return T_piece[3]
-    if (compare_surface(piece1, end_piece[0]) and compare_surface(piece2, L_piece[2])):
+    if (piece1 == end_piece[0] and piece2 == L_piece[2]):
         return piece2
-    if (compare_surface(piece1, end_piece[0]) and compare_surface(piece2, L_piece[3])):
+    if (piece1 == end_piece[0] and piece2 == L_piece[3]):
         return piece2
-    if (compare_surface(piece1, end_piece[1]) and compare_surface(piece2, L_piece[0])):
+    if (piece1 == end_piece[1] and piece2 == L_piece[0]):
         return piece2
-    if (compare_surface(piece1, end_piece[1]) and compare_surface(piece2, L_piece[1])):
+    if (piece1 == end_piece[1] and piece2 == L_piece[1]):
         return T_piece[2]
-    if (compare_surface(piece1, end_piece[1]) and compare_surface(piece2, L_piece[2])):
+    if (piece1 == end_piece[1] and piece2 == L_piece[2]):
         return T_piece[0]
-    if (compare_surface(piece1, end_piece[1]) and compare_surface(piece2, L_piece[3])):
+    if (piece1 == end_piece[1] and piece2 == L_piece[3]):
         return piece2
-    if (compare_surface(piece1, end_piece[2]) and compare_surface(piece2, L_piece[0])):
+    if (piece1 == end_piece[2] and piece2 == L_piece[0]):
         return piece2
-    if (compare_surface(piece1, end_piece[2]) and compare_surface(piece2, L_piece[1])):
+    if (piece1 == end_piece[2] and piece2 == L_piece[1]):
         return piece2
-    if (compare_surface(piece1, end_piece[2]) and compare_surface(piece2, L_piece[2])):
+    if (piece1 == end_piece[2] and piece2 == L_piece[2]):
         return T_piece[3]
-    if (compare_surface(piece1, end_piece[2]) and compare_surface(piece2, L_piece[3])):
+    if (piece1 == end_piece[2] and piece2 == L_piece[3]):
         return T_piece[1]
-    if (compare_surface(piece1, end_piece[3]) and compare_surface(piece2, L_piece[0])):
+    if (piece1 == end_piece[3] and piece2 == L_piece[0]):
         return T_piece[2]
-    if (compare_surface(piece1, end_piece[3]) and compare_surface(piece2, L_piece[1])):
+    if (piece1 == end_piece[3] and piece2 == L_piece[1]):
         return piece2
-    if (compare_surface(piece1, end_piece[3]) and compare_surface(piece2, L_piece[2])):
+    if (piece1 == end_piece[3] and piece2 == L_piece[2]):
         return piece2
-    if (compare_surface(piece1, end_piece[3]) and compare_surface(piece2, L_piece[3])):
+    if (piece1 == end_piece[3] and piece2 == L_piece[3]):
         return T_piece[0]
                                                               
     #end-I adding
-    if (compare_surface(piece1, end_piece[0]) and compare_surface(piece2, I_piece[0])):
+    if (piece1 == end_piece[0] and piece2 == I_piece[0]):
         return piece2
-    if (compare_surface(piece1, end_piece[0]) and compare_surface(piece2, I_piece[1])):
+    if (piece1 == end_piece[0] and piece2 == I_piece[1]):
         return T_piece[0]
-    if (compare_surface(piece1, end_piece[0]) and compare_surface(piece2, I_piece[2])):
+    if (piece1 == end_piece[0] and piece2 == I_piece[2]):
         return piece2
-    if (compare_surface(piece1, end_piece[0]) and compare_surface(piece2, I_piece[3])):
+    if (piece1 == end_piece[0] and piece2 == I_piece[3]):
         return T_piece[0]
-    if (compare_surface(piece1, end_piece[1]) and compare_surface(piece2, I_piece[0])):
+    if (piece1 == end_piece[1] and piece2 == I_piece[0]):
         return T_piece[1]
-    if (compare_surface(piece1, end_piece[1]) and compare_surface(piece2, I_piece[1])):
+    if (piece1 == end_piece[1] and piece2 == I_piece[1]):
         return piece2
-    if (compare_surface(piece1, end_piece[1]) and compare_surface(piece2, I_piece[2])):
+    if (piece1 == end_piece[1] and piece2 == I_piece[2]):
         return T_piece[1]
-    if (compare_surface(piece1, end_piece[1]) and compare_surface(piece2, I_piece[3])):
+    if (piece1 == end_piece[1] and piece2 == I_piece[3]):
         return piece2
-    if (compare_surface(piece1, end_piece[2]) and compare_surface(piece2, I_piece[0])):
+    if (piece1 == end_piece[2] and piece2 == I_piece[0]):
         return piece2
-    if (compare_surface(piece1, end_piece[2]) and compare_surface(piece2, I_piece[1])):
+    if (piece1 == end_piece[2] and piece2 == I_piece[1]):
         return T_piece[2]
-    if (compare_surface(piece1, end_piece[2]) and compare_surface(piece2, I_piece[2])):
+    if (piece1 == end_piece[2] and piece2 == I_piece[2]):
         return piece2
-    if (compare_surface(piece1, end_piece[2]) and compare_surface(piece2, I_piece[3])):
+    if (piece1 == end_piece[2] and piece2 == I_piece[3]):
         return T_piece[2]
-    if (compare_surface(piece1, end_piece[3]) and compare_surface(piece2, I_piece[0])):
+    if (piece1 == end_piece[3] and piece2 == I_piece[0]):
         return T_piece[3]
-    if (compare_surface(piece1, end_piece[3]) and compare_surface(piece2, I_piece[1])):
+    if (piece1 == end_piece[3] and piece2 == I_piece[1]):
         return piece2
-    if (compare_surface(piece1, end_piece[3]) and compare_surface(piece2, I_piece[2])):
+    if (piece1 == end_piece[3] and piece2 == I_piece[2]):
         return T_piece[3]
-    if (compare_surface(piece1, end_piece[3]) and compare_surface(piece2, I_piece[3])):
+    if (piece1 == end_piece[3] and piece2 == I_piece[3]):
         return piece2
 
     #end-T adding
-    if (compare_surface(piece1, end_piece[0]) and compare_surface(piece2, T_piece[0])):
+    if (piece1 == end_piece[0] and piece2 == T_piece[0]):
         return piece2
-    if (compare_surface(piece1, end_piece[0]) and compare_surface(piece2, T_piece[1])):
+    if (piece1 == end_piece[0] and piece2 == T_piece[1]):
         return piece2
-    if (compare_surface(piece1, end_piece[0]) and compare_surface(piece2, T_piece[2])):
+    if (piece1 == end_piece[0] and piece2 == T_piece[2]):
         return X_piece[math.floor(random.random() * 4)]
-    if (compare_surface(piece1, end_piece[0]) and compare_surface(piece2, T_piece[3])):
+    if (piece1 == end_piece[0] and piece2 == T_piece[3]):
         return piece2
-    if (compare_surface(piece1, end_piece[1]) and compare_surface(piece2, T_piece[0])):
+    if (piece1 == end_piece[1] and piece2 == T_piece[0]):
         return piece2
-    if (compare_surface(piece1, end_piece[1]) and compare_surface(piece2, T_piece[1])):
+    if (piece1 == end_piece[1] and piece2 == T_piece[1]):
         return piece2
-    if (compare_surface(piece1, end_piece[1]) and compare_surface(piece2, T_piece[2])):
+    if (piece1 == end_piece[1] and piece2 == T_piece[2]):
         return piece2
-    if (compare_surface(piece1, end_piece[1]) and compare_surface(piece2, T_piece[3])):
+    if (piece1 == end_piece[1] and piece2 == T_piece[3]):
         return X_piece[math.floor(random.random() * 4)]
-    if (compare_surface(piece1, end_piece[2]) and compare_surface(piece2, T_piece[0])):
+    if (piece1 == end_piece[2] and piece2 == T_piece[0]):
         return X_piece[math.floor(random.random() * 4)]
-    if (compare_surface(piece1, end_piece[2]) and compare_surface(piece2, T_piece[1])):
+    if (piece1 == end_piece[2] and piece2 == T_piece[1]):
         return piece2
-    if (compare_surface(piece1, end_piece[2]) and compare_surface(piece2, T_piece[2])):
+    if (piece1 == end_piece[2] and piece2 == T_piece[2]):
         return piece2
-    if (compare_surface(piece1, end_piece[2]) and compare_surface(piece2, T_piece[3])):
+    if (piece1 == end_piece[2] and piece2 == T_piece[3]):
         return piece2
-    if (compare_surface(piece1, end_piece[3]) and compare_surface(piece2, T_piece[0])):
+    if (piece1 == end_piece[3] and piece2 == T_piece[0]):
         return piece2
-    if (compare_surface(piece1, end_piece[3]) and compare_surface(piece2, T_piece[1])):
+    if (piece1 == end_piece[3] and piece2 == T_piece[1]):
         return X_piece[math.floor(random.random() * 4)]
-    if (compare_surface(piece1, end_piece[3]) and compare_surface(piece2, T_piece[2])):
+    if (piece1 == end_piece[3] and piece2 == T_piece[2]):
         return piece2
-    if (compare_surface(piece1, end_piece[3]) and compare_surface(piece2, T_piece[3])):
+    if (piece1 == end_piece[3] and piece2 == T_piece[3]):
         return piece2
 
     #in future you might need to add:
@@ -234,6 +235,20 @@ def path(x, y, rot):
     grid[x][y] = add_pieces(grid[x][y], end_piece[rot])
     grid[x+rot][y+(1-rot)] = add_pieces(grid[x+rot][y+(1-rot)], end_piece[rot+2])
 
+#returns sprite based on input piece
+def piece_to_sprite(tile):
+    if (tile[0] == 1):
+        return end_tile[tile[1]]
+    if (tile[0] == 2):
+        return L_tile[tile[1]]
+    if (tile[0] == 3):
+        return I_tile[tile[1]]
+    if (tile[0] == 4):
+        return T_tile[tile[1]]
+    if (tile[0] == 5):
+        return X_tile[tile[1]]
+    return empty_tile
+
 def gameLoop():
     game_over = False
     
@@ -261,7 +276,7 @@ def gameLoop():
         #Your Code
         for x in range(grid_x):
             for y in range(grid_y):
-                dis.blit(grid[x][y], [x  * cell_size, y * cell_size])
+                dis.blit(piece_to_sprite(grid[x][y]), [x  * cell_size, y * cell_size])
 
         pygame.display.update()
         clock.tick(30)
