@@ -9,7 +9,6 @@ cell_size = 24
 grid_x = 24
 grid_y = 24
 grid = []
-bool_grid = []
 dis_width = cell_size * grid_x
 dis_height = cell_size * grid_y
 dis = pygame.display.set_mode((dis_width, dis_height))
@@ -37,10 +36,6 @@ for x in range(grid_x):
     grid.append([])
     for y in range(grid_y):
         grid[x].append(empty_piece)
-for x in range(grid_x):
-    bool_grid.append([])
-    for y in range(grid_y):
-        bool_grid[x].append(False)
 
 
 #creates easily accesible rotations for sprites
