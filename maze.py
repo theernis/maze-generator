@@ -1,5 +1,3 @@
-from asyncio.windows_events import NULL
-from tarfile import NUL
 import pygame
 import random
 import math
@@ -11,6 +9,7 @@ cell_size = 24
 grid_x = 24
 grid_y = 24
 grid = []
+bool_grid = []
 dis_width = cell_size * grid_x
 dis_height = cell_size * grid_y
 dis = pygame.display.set_mode((dis_width, dis_height))
@@ -38,6 +37,10 @@ for x in range(grid_x):
     grid.append([])
     for y in range(grid_y):
         grid[x].append(empty_piece)
+for x in range(grid_x):
+    bool_grid.append([])
+    for y in range(grid_y):
+        bool_grid[x].append(False)
 
 
 #creates easily accesible rotations for sprites
@@ -226,7 +229,7 @@ def new_entrance():
 #generates a path between two conecting tiles
 #rot value is for rotation (0 - down; 1 - right; 2 - up; 3 - left)
 def path(x, y, rot):
-    if (rot < 0 or rot >= 4 or x < 0 or x >= grid_x or y < 0 or y >= grid_y):
+    if (rot < 0 or rot >= 4 or x < 0 or x + 1 >= grid_x or y < 0 or y + 1 >= grid_y):
         return
     if (rot >= 2):
         path(x+(2-rot), y+(rot-3), rot - 2)
@@ -249,6 +252,19 @@ def piece_to_sprite(tile):
         return X_tile[tile[1]]
     return empty_tile
 
+#generates map
+def generation(x, y):
+    moves = [0, 1]
+
+    for i in moves:
+        mod_x = x + (i % 2) * (1 - 2 * (i > 1))
+        mod_y = y + (1 - i % 2) * (1 - i)
+        if (mod_x < 0 or mod_x >= grid_x or mod_y < 0 or mod_y >= grid_y):
+            continue
+        if (grid[mod_x][mod_y][0] == 0):
+            path(x, y, i)
+            generation(mod_x, mod_y)
+
 def gameLoop():
     game_over = False
     
@@ -258,6 +274,8 @@ def gameLoop():
     #        grid[x * 2 + 1][y * 4 + 2] = T_piece[x]
     #        grid[x * 2 + 1][y * 4 + 3] = end_piece[y]
     
+    generation(math.floor(random.random()*grid_x), math.floor(random.random()*grid_y))
+
     path(1,1,0)
     path(1,2,1)
     path(2,2,0)
