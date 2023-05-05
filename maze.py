@@ -82,44 +82,46 @@ def add_pieces(piece1, piece2):
         #end-L adding
         if (piece2[0] == 2):
             #result is T piece
-            if (piece1[1] == 0 and piece2[1] == 0):
-                return T_piece[1]
-            if (piece1[1] == 0 and piece2[1] == 1):
-                return T_piece[3]
-            if (piece1[1] == 1 and piece2[1] == 1):
-                return T_piece[2]
-            if (piece1[1] == 1 and piece2[1] == 2):
-                return T_piece[0]
-            if (piece1[1] == 2 and piece2[1] == 2):
-                return T_piece[3]
-            if (piece1[1] == 2 and piece2[1] == 3):
-                return T_piece[1]
-            if (piece1[1] == 3 and piece2[1] == 0):
-                return T_piece[2]
-            if (piece1[1] == 3 and piece2[1] == 3):
-                return T_piece[0]
+            if (piece2[1]-piece1[1]==0 or piece2[1]-piece1[1]==1 or (piece1[1]==3 and piece2[1]==0)):
+                if (piece1[1] == 0 and piece2[1] == 0):
+                    return T_piece[1]
+                if (piece1[1] == 0 and piece2[1] == 1):
+                    return T_piece[3]
+                if (piece1[1] == 1 and piece2[1] == 1):
+                    return T_piece[2]
+                if (piece1[1] == 1 and piece2[1] == 2):
+                    return T_piece[0]
+                if (piece1[1] == 2 and piece2[1] == 2):
+                    return T_piece[3]
+                if (piece1[1] == 2 and piece2[1] == 3):
+                    return T_piece[1]
+                if (piece1[1] == 3 and piece2[1] == 0):
+                    return T_piece[2]
+                if (piece1[1] == 3 and piece2[1] == 3):
+                    return T_piece[0]
             #result is original L piece
             return piece2
                                                                   
         #end-I adding
         if (piece2[0] == 3):
             #results in T piece
-            if (piece1[1] == 0 and piece2[1] == 1):
-                return T_piece[0]
-            if (piece1[1] == 0 and piece2[1] == 3):
-                return T_piece[0]
-            if (piece1[1] == 1 and piece2[1] == 0):
-                return T_piece[1]
-            if (piece1[1] == 1 and piece2[1] == 2):
-                return T_piece[1]
-            if (piece1[1] == 2 and piece2[1] == 1):
-                return T_piece[2]
-            if (piece1[1] == 2 and piece2[1] == 3):
-                return T_piece[2]
-            if (piece1[1] == 3 and piece2[1] == 0):
-                return T_piece[3]
-            if (piece1[1] == 3 and piece2[1] == 2):
-                return T_piece[3]
+            if (abs(piece1[1]-piece2[1]) % 2 == 1):
+                if (piece1[1] == 0 and piece2[1] == 1):
+                    return T_piece[0]
+                if (piece1[1] == 0 and piece2[1] == 3):
+                    return T_piece[0]
+                if (piece1[1] == 1 and piece2[1] == 0):
+                    return T_piece[1]
+                if (piece1[1] == 1 and piece2[1] == 2):
+                    return T_piece[1]
+                if (piece1[1] == 2 and piece2[1] == 1):
+                    return T_piece[2]
+                if (piece1[1] == 2 and piece2[1] == 3):
+                    return T_piece[2]
+                if (piece1[1] == 3 and piece2[1] == 0):
+                    return T_piece[3]
+                if (piece1[1] == 3 and piece2[1] == 2):
+                    return T_piece[3]
             #results in original I piece
             return piece2
 
