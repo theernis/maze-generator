@@ -73,135 +73,63 @@ def add_pieces(piece1, piece2):
     if (piece1[0] == 1):
         #end-end adding
         if (piece2[0] == 1):
-            if (piece1[1] == 0 and piece2[1] == 1):
-                return L_piece[3]
-            if (piece1[1] == 0 and piece2[1] == 2):
-                return I_piece[round(random.random()) * 2]
-            if (piece1[1] == 0 and piece2[1] == 3):
-                return L_piece[2]
-            if (piece1[1] == 1 and piece2[1] == 0):
-                return L_piece[3]
-            if (piece1[1] == 1 and piece2[1] == 2):
-                return L_piece[0]
-            if (piece1[1] == 1 and piece2[1] == 3):
-                return I_piece[round(random.random()) * 2 + 1]
-            if (piece1[1] == 2 and piece2[1] == 0):
-                return I_piece[round(random.random()) * 2]
-            if (piece1[1] == 2 and piece2[1] == 1):
-                return L_piece[0]
-            if (piece1[1] == 2 and piece2[1] == 3):
-                return L_piece[1]
-            if (piece1[1] == 3 and piece2[1] == 0):
-                return L_piece[2]
-            if (piece1[1] == 3 and piece2[1] == 1):
-                return I_piece[round(random.random()) * 2 + 1]
-            if (piece1[1] == 3 and piece2[1] == 2):
-                return L_piece[1]
+            #result is I piece
+            if (abs(piece1[1] - piece2[1]) == 2):
+                return I_piece[round(random.random()) * 2 + piece1[1] % 2]
+            #result is L piece
+            return L_piece[(2 if (max(piece1[1], piece2[1])-min(piece1[1], piece2[1]) == 3) else (0 if (min(piece1[1], piece2[1]) == 1) else 3-min(piece1[1], piece2[1])))]
 
         #end-L adding
         if (piece2[0] == 2):
+            #result is T piece
             if (piece1[1] == 0 and piece2[1] == 0):
                 return T_piece[1]
             if (piece1[1] == 0 and piece2[1] == 1):
                 return T_piece[3]
-            if (piece1[1] == 0 and piece2[1] == 2):
-                return piece2
-            if (piece1[1] == 0 and piece2[1] == 3):
-                return piece2
-            if (piece1[1] == 1 and piece2[1] == 0):
-                return piece2
             if (piece1[1] == 1 and piece2[1] == 1):
                 return T_piece[2]
             if (piece1[1] == 1 and piece2[1] == 2):
                 return T_piece[0]
-            if (piece1[1] == 1 and piece2[1] == 3):
-                return piece2
-            if (piece1[1] == 2 and piece2[1] == 0):
-                return piece2
-            if (piece1[1] == 2 and piece2[1] == 1):
-                return piece2
             if (piece1[1] == 2 and piece2[1] == 2):
                 return T_piece[3]
             if (piece1[1] == 2 and piece2[1] == 3):
                 return T_piece[1]
             if (piece1[1] == 3 and piece2[1] == 0):
                 return T_piece[2]
-            if (piece1[1] == 3 and piece2[1] == 1):
-                return piece2
-            if (piece1[1] == 3 and piece2[1] == 2):
-                return piece2
             if (piece1[1] == 3 and piece2[1] == 3):
                 return T_piece[0]
+            #result is original L piece
+            return piece2
                                                                   
         #end-I adding
         if (piece2[0] == 3):
-            if (piece1[1] == 0 and piece2[1] == 0):
-                return piece2
+            #results in T piece
             if (piece1[1] == 0 and piece2[1] == 1):
                 return T_piece[0]
-            if (piece1[1] == 0 and piece2[1] == 2):
-                return piece2
             if (piece1[1] == 0 and piece2[1] == 3):
                 return T_piece[0]
             if (piece1[1] == 1 and piece2[1] == 0):
                 return T_piece[1]
-            if (piece1[1] == 1 and piece2[1] == 1):
-                return piece2
             if (piece1[1] == 1 and piece2[1] == 2):
                 return T_piece[1]
-            if (piece1[1] == 1 and piece2[1] == 3):
-                return piece2
-            if (piece1[1] == 2 and piece2[1] == 0):
-                return piece2
             if (piece1[1] == 2 and piece2[1] == 1):
                 return T_piece[2]
-            if (piece1[1] == 2 and piece2[1] == 2):
-                return piece2
             if (piece1[1] == 2 and piece2[1] == 3):
                 return T_piece[2]
             if (piece1[1] == 3 and piece2[1] == 0):
                 return T_piece[3]
-            if (piece1[1] == 3 and piece2[1] == 1):
-                return piece2
             if (piece1[1] == 3 and piece2[1] == 2):
                 return T_piece[3]
-            if (piece1[1] == 3 and piece2[1] == 3):
-                return piece2
+            #results in original I piece
+            return piece2
 
         #end-T adding
         if(piece2[0] == 4):
-            if (piece1[1] == 0 and piece2[1] == 0):
-                return piece2
-            if (piece1[1] == 0 and piece2[1] == 1):
-                return piece2
-            if (piece1[1] == 0 and piece2[1] == 2):
+            #results in X piece
+            if (abs(piece1[1] - piece2[1]) == 2):
                 return X_piece[math.floor(random.random() * 4)]
-            if (piece1[1] == 0 and piece2[1] == 3):
-                return piece2
-            if (piece1[1] == 1 and piece2[1] == 0):
-                return piece2
-            if (piece1[1] == 1 and piece2[1] == 1):
-                return piece2
-            if (piece1[1] == 1 and piece2[1] == 2):
-                return piece2
-            if (piece1[1] == 1 and piece2[1] == 3):
-                return X_piece[math.floor(random.random() * 4)]
-            if (piece1[1] == 2 and piece2[1] == 0):
-                return X_piece[math.floor(random.random() * 4)]
-            if (piece1[1] == 2 and piece2[1] == 1):
-                return piece2
-            if (piece1[1] == 2 and piece2[1] == 2):
-                return piece2
-            if (piece1[1] == 2 and piece2[1] == 3):
-                return piece2
-            if (piece1[1] == 3 and piece2[1] == 0):
-                return piece2
-            if (piece1[1] == 3 and piece2[1] == 1):
-                return X_piece[math.floor(random.random() * 4)]
-            if (piece1[1] == 3 and piece2[1] == 2):
-                return piece2
-            if (piece1[1] == 3 and piece2[1] == 3):
-                return piece2
+            #results in original T piece
+            return piece2
 
     #in future you might need to add:
     #L-L addition
