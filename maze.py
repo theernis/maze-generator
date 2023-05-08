@@ -210,17 +210,11 @@ def generation(x, y):
 
 def gameLoop():
     game_over = False
-
-    for x in range(4):
-        for y in range(4):
-            grid[x * 2 + 1][y * 4 + 1] = add_pieces(I_piece[x], T_piece[y])
-            grid[x * 2 + 1][y * 4 + 2] = I_piece[x]
-            grid[x * 2 + 1][y * 4 + 3] = T_piece[y]
     
-    #generation(math.floor(random.random()*grid_x), math.floor(random.random()*grid_y))
+    generation(math.floor(random.random()*grid_x), math.floor(random.random()*grid_y))
 
-    #new_entrance()
-    #new_entrance()
+    new_entrance()
+    new_entrance()
     
     while not game_over:
         for event in pygame.event.get():
