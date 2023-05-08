@@ -105,13 +105,51 @@ def add_pieces(piece1, piece2):
             #results in original T piece
             return piece2
 
-    #in future you might need to add:
-    #L-L addition
-    #L-I addition
-    #L-T addition
-    #I-I addition
-    #I-T addition
-    #T-T addition
+    #making sure there L piece at the start
+    if (piece2[0] == 2):
+        if not(piece1[0] == 2):
+            piece1, piece2 = piece2, piece1
+    
+    #L-smth adding
+    if (piece1[0] == 2):
+        #L-L adding
+        if (piece2[0] == 2):
+            if (abs(piece1[1]-piece2[1]) == 2):
+                return X_piece[math.floor(random.random() * 4)]
+            return T_piece[(1+max(piece1[1], piece2[1]))%4 + (1 if (max(piece1[1],piece2[1])-min(piece1[1],piece2[1])==3) else 0)]
+        #L-I adding
+        if (piece2[0] == 3):
+            return T_piece[1-piece2[1]%2+(2 if (piece1[1]+piece2[1]%2==1 or piece1[1]+piece2[1]%2==2) else 0)]
+        #L-T adding
+        if (piece2[0] == 4):
+            if (piece1[1] == piece2[1] or piece1[1]==(piece2[1]+1)%4):
+                return X_piece[math.floor(random.random() * 4)]
+            return piece2
+    
+    #making sure there I piece at the start
+    if (piece2[0] == 3):
+        if not(piece1[0] == 3):
+            piece1, piece2 = piece2, piece1
+            
+    #I-smth adding
+    if (piece1[0] == 3):
+        pass
+        #I-I adding
+        if (piece2[0] == 3):
+            if (piece1[1]%2 == piece2[1]%2):
+                return I_piece[round(random.random()) * 2 + piece1[1] % 2]
+            return X_piece[math.floor(random.random() * 4)]
+        #I-T adding
+        if (piece2[0] == 4):
+            if (piece1[1]%2 == piece2[1]%2):
+                return X_piece[math.floor(random.random() * 4)]
+            return piece2
+
+    #T-smth adding
+    if (piece1[0] == 4):
+        pass
+        #T-T adding
+        return X_piece[math.floor(random.random() * 4)]
 
     return empty_piece
 
@@ -172,11 +210,17 @@ def generation(x, y):
 
 def gameLoop():
     game_over = False
-    
-    generation(math.floor(random.random()*grid_x), math.floor(random.random()*grid_y))
 
-    new_entrance()
-    new_entrance()
+    for x in range(4):
+        for y in range(4):
+            grid[x * 2 + 1][y * 4 + 1] = add_pieces(I_piece[x], T_piece[y])
+            grid[x * 2 + 1][y * 4 + 2] = I_piece[x]
+            grid[x * 2 + 1][y * 4 + 3] = T_piece[y]
+    
+    #generation(math.floor(random.random()*grid_x), math.floor(random.random()*grid_y))
+
+    #new_entrance()
+    #new_entrance()
     
     while not game_over:
         for event in pygame.event.get():
