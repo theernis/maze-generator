@@ -194,24 +194,30 @@ def piece_to_sprite(tile):
     return empty_tile
 
 #generates map
-def generation(x, y):
+def generation():
+    stack = [[math.floor(random.random()*grid_x), math.floor(random.random()*grid_y)]]
     moves = [0, 1, 2, 3]
 
-    random.shuffle(moves)
+    while (len(stack) != 0):
+        current = stack[len(stack) - 1]
+        stack.pop(-1)
 
-    for i in moves:
-        mod_x = x + (i % 2) * (1 - 2 * (i > 1))
-        mod_y = y + (1 - i % 2) * (1 - i)
-        if (mod_x < 0 or mod_x >= grid_x or mod_y < 0 or mod_y >= grid_y):
-            continue
-        if (grid[mod_x][mod_y][0] == 0):
-            path(x, y, i)
-            generation(mod_x, mod_y)
+        random.shuffle(moves)
+        for i in moves:
+            mod_x = current[0] + (i % 2) * (1 - 2 * (i > 1))
+            mod_y = current[1] + (1 - i % 2) * (1 - i)
+            if (mod_x < 0 or mod_x >= grid_x or mod_y < 0 or mod_y >= grid_y):
+                continue
+            if (grid[mod_x][mod_y][0] == 0):
+                stack.append(current)
+                path(current[0], current[1], i)
+                stack.append([mod_x, mod_y])
+                break
 
 def gameLoop():
     game_over = False
     
-    generation(math.floor(random.random()*grid_x), math.floor(random.random()*grid_y))
+    generation()
 
     new_entrance()
     new_entrance()
