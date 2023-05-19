@@ -1,8 +1,35 @@
 import pygame
-import random
 import math
+import os
 
 pygame.init()
+
+#random
+seed = 123
+state = 0
+def random(a, b):
+    if (a > b):
+        return random(b, a)
+    if (a != 0):
+        return a + random(0, b+a)
+
+    global state
+    result = b + 1
+    i = state
+    while (result == b+1):
+        result = (seed + seed * state ^ 3) % (b+1)
+        i += 1
+        
+    state += 1
+    return result
+
+def shuffle(temp_list):
+    temp = []
+    while (len(temp_list) != 0):
+        i = random(0, len(temp_list) - 1)
+        temp.append(temp_list[i])
+        temp_list.pop(i)
+    return temp
 
 #set values
 cell_size = 24
@@ -16,12 +43,35 @@ pygame.display.set_caption('maze')
 clock = pygame.time.Clock()
 
 #load images
-X_tile = pygame.image.load("X_piece.png").convert_alpha()
-T_tile = pygame.image.load("T_piece.png").convert_alpha()
-I_tile = pygame.image.load("I_piece.png").convert_alpha()
-L_tile = pygame.image.load("L_piece.png").convert_alpha()
-end_tile = pygame.image.load("end_piece.png").convert_alpha()
 empty_tile = pygame.Surface((grid_x, grid_y), flags = pygame.SRCALPHA)
+X_tile = []
+T_tile = []
+I_tile = []
+L_tile = []
+end_tile = []
+
+for root, dirs, files in os.walk(".\Images", topdown=False):
+    for name in files:
+        item = name.split(".")
+        root1 = root[2:]
+        if (item[-1] == "png"):
+            path = root1 + "\\" + name
+            if (item[0].startswith("X_piece")):
+                X_tile.append(pygame.image.load(path).convert_alpha())
+                continue
+            if (item[0].startswith("T_piece")):
+                T_tile.append(pygame.image.load(path).convert_alpha())
+                continue
+            if (item[0].startswith("I_piece")):
+                I_tile.append(pygame.image.load(path).convert_alpha())
+                continue
+            if (item[0].startswith("L_piece")):
+                L_tile.append(pygame.image.load(path).convert_alpha())
+                continue
+            if (item[0].startswith("end_piece")):
+                end_tile.append(pygame.image.load(path).convert_alpha())
+                continue
+            print(item[0])
 
 X_piece = [[5,0],[5,1],[5,2],[5,3]]
 T_piece = [[4,0],[4,1],[4,2],[4,3]]
@@ -41,8 +91,11 @@ for x in range(grid_x):
 #creates easily accesible rotations for sprites
 def create_rotations(sprite):
     temp = []
-    for angle in range(4):
-      temp.append(pygame.transform.rotate(sprite, angle * 90))
+    for item in sprite:
+        temp1 = []
+        for angle in range(4):
+            temp1.append(pygame.transform.rotate(item, angle * 90))
+        temp.append(temp1)
     return temp
 
 X_tile = create_rotations(X_tile)
@@ -58,7 +111,7 @@ def add_pieces(piece1, piece2):
     if (piece1 == piece2):
         return piece1
     if (piece1[0] == 5 or piece2[0] == 5):
-        return X_piece[math.floor(random.random() * 4)]
+        return X_piece[random(0, 3)]
     if (piece1[0] == 0):
         return piece2
     if (piece2[0] == 0):
@@ -75,7 +128,7 @@ def add_pieces(piece1, piece2):
         if (piece2[0] == 1):
             #result is I piece
             if (abs(piece1[1] - piece2[1]) == 2):
-                return I_piece[round(random.random()) * 2 + piece1[1] % 2]
+                return I_piece[random(0, 1) * 2 + piece1[1] % 2]
             #result is L piece
             return L_piece[(2 if (max(piece1[1], piece2[1])-min(piece1[1], piece2[1]) == 3) else (0 if (min(piece1[1], piece2[1]) == 1) else 3-min(piece1[1], piece2[1])))]
 
@@ -101,7 +154,7 @@ def add_pieces(piece1, piece2):
         if(piece2[0] == 4):
             #results in X piece
             if (abs(piece1[1] - piece2[1]) == 2):
-                return X_piece[math.floor(random.random() * 4)]
+                return X_piece[random(0, 3)]
             #results in original T piece
             return piece2
 
@@ -115,7 +168,7 @@ def add_pieces(piece1, piece2):
         #L-L adding
         if (piece2[0] == 2):
             if (abs(piece1[1]-piece2[1]) == 2):
-                return X_piece[math.floor(random.random() * 4)]
+                return X_piece[random(0, 3)]
             return T_piece[(1+max(piece1[1], piece2[1]))%4 + (1 if (max(piece1[1],piece2[1])-min(piece1[1],piece2[1])==3) else 0)]
         #L-I adding
         if (piece2[0] == 3):
@@ -123,7 +176,7 @@ def add_pieces(piece1, piece2):
         #L-T adding
         if (piece2[0] == 4):
             if (piece1[1] == piece2[1] or piece1[1]==(piece2[1]+1)%4):
-                return X_piece[math.floor(random.random() * 4)]
+                return X_piece[random(0, 3)]
             return piece2
     
     #making sure there I piece at the start
@@ -137,33 +190,33 @@ def add_pieces(piece1, piece2):
         #I-I adding
         if (piece2[0] == 3):
             if (piece1[1]%2 == piece2[1]%2):
-                return I_piece[round(random.random()) * 2 + piece1[1] % 2]
-            return X_piece[math.floor(random.random() * 4)]
+                return I_piece[random(0, 1) * 2 + piece1[1] % 2]
+            return X_piece[random(0, 3)]
         #I-T adding
         if (piece2[0] == 4):
             if (piece1[1]%2 == piece2[1]%2):
-                return X_piece[math.floor(random.random() * 4)]
+                return X_piece[random(0, 3)]
             return piece2
 
     #T-smth adding
     if (piece1[0] == 4):
         pass
         #T-T adding
-        return X_piece[math.floor(random.random() * 4)]
+        return X_piece[random(0, 3)]
 
     return empty_piece
 
 
 #generates a new entrance
 def new_entrance():
-    if (round(random.random()) == 1):
-        a = round(random.random())
+    if (random(0, 1) == 1):
+        a = random(0, 1)
         x = a * (grid_x - 1)
-        y = math.floor(random.random() * grid_y)
+        y = random(0, grid_y)
         grid[x][y] = add_pieces(grid[x][y], end_piece[(1 - a) * 2 + 1])
     else:
-        a = round(random.random())
-        x = math.floor(random.random() * grid_x)
+        a = random(0, 1)
+        x = random(0, grid_x)
         y = a * (grid_y - 1)
         grid[x][y] = add_pieces(grid[x][y], end_piece[(1 - a) * 2])
 
@@ -182,27 +235,27 @@ def path(x, y, rot):
 #returns sprite based on input piece
 def piece_to_sprite(tile):
     if (tile[0] == 1):
-        return end_tile[tile[1]]
+        return end_tile[random(0, len(end_tile)-1)][tile[1]]
     if (tile[0] == 2):
-        return L_tile[tile[1]]
+        return L_tile[random(0, len(L_tile)-1)][tile[1]]
     if (tile[0] == 3):
-        return I_tile[tile[1]]
+        return I_tile[random(0, len(I_tile)-1)][tile[1]]
     if (tile[0] == 4):
-        return T_tile[tile[1]]
+        return T_tile[random(0, len(T_tile)-1)][tile[1]]
     if (tile[0] == 5):
-        return X_tile[tile[1]]
+        return X_tile[random(0, len(X_tile)-1)][tile[1]]
     return empty_tile
 
 #generates map
 def generation():
-    stack = [[math.floor(random.random()*grid_x), math.floor(random.random()*grid_y)]]
+    stack = [[random(0, grid_x), random(0, grid_y)]]
     moves = [0, 1, 2, 3]
 
     while (len(stack) != 0):
         current = stack[len(stack) - 1]
         stack.pop(-1)
 
-        random.shuffle(moves)
+        moves = shuffle(moves)
         for i in moves:
             mod_x = current[0] + (i % 2) * (1 - 2 * (i > 1))
             mod_y = current[1] + (1 - i % 2) * (1 - i)
