@@ -1,3 +1,4 @@
+import ez_profile
 import pygame
 import math
 import os
