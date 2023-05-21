@@ -1,4 +1,5 @@
 import ez_profile
+import generator
 import pygame
 import math
 import os
@@ -18,7 +19,7 @@ def random(a, b):
     result = b + 1
     i = state
     while (result == b+1):
-        result = (seed + seed * state ^ 3) % (b+1)
+        result = ((seed + seed * state ** 3) ^ i) % (b+1)
         i += 1
         
     state += 1
@@ -43,43 +44,12 @@ dis = pygame.display.set_mode((dis_width, dis_height))
 pygame.display.set_caption('maze')
 clock = pygame.time.Clock()
 
-#load images
-empty_tile = pygame.Surface((grid_x, grid_y), flags = pygame.SRCALPHA)
-X_tile = []
-T_tile = []
-I_tile = []
-L_tile = []
-end_tile = []
-
-for root, dirs, files in os.walk(".\Images", topdown=False):
-    for name in files:
-        item = name.split(".")
-        root1 = root[2:]
-        if (item[-1] == "png"):
-            path = root1 + "\\" + name
-            if (item[0].startswith("X_piece")):
-                X_tile.append(pygame.image.load(path).convert_alpha())
-                continue
-            if (item[0].startswith("T_piece")):
-                T_tile.append(pygame.image.load(path).convert_alpha())
-                continue
-            if (item[0].startswith("I_piece")):
-                I_tile.append(pygame.image.load(path).convert_alpha())
-                continue
-            if (item[0].startswith("L_piece")):
-                L_tile.append(pygame.image.load(path).convert_alpha())
-                continue
-            if (item[0].startswith("end_piece")):
-                end_tile.append(pygame.image.load(path).convert_alpha())
-                continue
-            print(item[0])
-
 X_piece = [[5,0],[5,1],[5,2],[5,3]]
 T_piece = [[4,0],[4,1],[4,2],[4,3]]
 I_piece = [[3,0],[3,1],[3,2],[3,3]]
 L_piece = [[2,0],[2,1],[2,2],[2,3]]
 end_piece = [[1,0],[1,1],[1,2],[1,3]]
-empty_piece = [0,0]
+empty_piece = None
 
 
 #fill in grid
@@ -89,34 +59,17 @@ for x in range(grid_x):
         grid[x].append(empty_piece)
 
 
-#creates easily accesible rotations for sprites
-def create_rotations(sprite):
-    temp = []
-    for item in sprite:
-        temp1 = []
-        for angle in range(4):
-            temp1.append(pygame.transform.rotate(item, angle * 90))
-        temp.append(temp1)
-    return temp
-
-X_tile = create_rotations(X_tile)
-T_tile = create_rotations(T_tile)
-I_tile = create_rotations(I_tile)
-L_tile = create_rotations(L_tile)
-end_tile = create_rotations(end_tile)
-
-
 #adds two pieces to form another
 def add_pieces(piece1, piece2):
     #basic adding
     if (piece1 == piece2):
         return piece1
+    if (piece1 == None):
+        return piece2
+    if (piece2 == None):
+        return piece1
     if (piece1[0] == 5 or piece2[0] == 5):
         return X_piece[random(0, 3)]
-    if (piece1[0] == 0):
-        return piece2
-    if (piece2[0] == 0):
-        return piece1
     
     #making sure there end piece at the start
     if (piece2[0] == 1):
@@ -233,20 +186,6 @@ def path(x, y, rot):
     grid[x][y] = add_pieces(grid[x][y], end_piece[rot])
     grid[x+rot][y+(1-rot)] = add_pieces(grid[x+rot][y+(1-rot)], end_piece[rot+2])
 
-#returns sprite based on input piece
-def piece_to_sprite(tile):
-    if (tile[0] == 1):
-        return end_tile[random(0, len(end_tile)-1)][tile[1]]
-    if (tile[0] == 2):
-        return L_tile[random(0, len(L_tile)-1)][tile[1]]
-    if (tile[0] == 3):
-        return I_tile[random(0, len(I_tile)-1)][tile[1]]
-    if (tile[0] == 4):
-        return T_tile[random(0, len(T_tile)-1)][tile[1]]
-    if (tile[0] == 5):
-        return X_tile[random(0, len(X_tile)-1)][tile[1]]
-    return empty_tile
-
 #generates map
 def generation():
     stack = [[random(0, grid_x), random(0, grid_y)]]
@@ -262,11 +201,73 @@ def generation():
             mod_y = current[1] + (1 - i % 2) * (1 - i)
             if (mod_x < 0 or mod_x >= grid_x or mod_y < 0 or mod_y >= grid_y):
                 continue
-            if (grid[mod_x][mod_y][0] == 0):
+            if (grid[mod_x][mod_y] == None):
                 stack.append(current)
                 path(current[0], current[1], i)
                 stack.append([mod_x, mod_y])
                 break
+
+#load images
+empty_tile = pygame.Surface((cell_size, cell_size), flags = pygame.SRCALPHA)
+X_tile = []
+T_tile = []
+I_tile = []
+L_tile = []
+end_tile = []
+
+for root, dirs, files in os.walk(".\Images", topdown=False):
+    for name in files:
+        item = name.split(".")
+        root1 = root[2:]
+        if (item[-1] == "png"):
+            item_path = root1 + "\\" + name
+            if (item[0].startswith("X_piece")):
+                X_tile.append(pygame.image.load(item_path).convert_alpha())
+                continue
+            if (item[0].startswith("T_piece")):
+                T_tile.append(pygame.image.load(item_path).convert_alpha())
+                continue
+            if (item[0].startswith("I_piece")):
+                I_tile.append(pygame.image.load(item_path).convert_alpha())
+                continue
+            if (item[0].startswith("L_piece")):
+                L_tile.append(pygame.image.load(item_path).convert_alpha())
+                continue
+            if (item[0].startswith("end_piece")):
+                end_tile.append(pygame.image.load(item_path).convert_alpha())
+                continue
+            print(item[0])
+
+
+#creates easily accesible rotations for sprites
+def create_rotations(sprite):
+    temp = []
+    for item in sprite:
+        temp1 = []
+        for angle in range(4):
+            temp1.append(pygame.transform.rotate(item, angle * 90))
+        temp.append(temp1)
+    return temp
+
+X_tile = create_rotations(X_tile)
+T_tile = create_rotations(T_tile)
+I_tile = create_rotations(I_tile)
+L_tile = create_rotations(L_tile)
+end_tile = create_rotations(end_tile)
+
+#returns sprite based on input piece
+def piece_to_sprite(tile):
+    if (tile[0] == 1):
+        return end_tile[random(0, len(end_tile)-1)][tile[1]]
+    if (tile[0] == 2):
+        return L_tile[random(0, len(L_tile)-1)][tile[1]]
+    if (tile[0] == 3):
+        return I_tile[random(0, len(I_tile)-1)][tile[1]]
+    if (tile[0] == 4):
+        return T_tile[random(0, len(T_tile)-1)][tile[1]]
+    if (tile[0] == 5):
+        return X_tile[random(0, len(X_tile)-1)][tile[1]]
+    return empty_tile
 
 def gameLoop():
     game_over = False
