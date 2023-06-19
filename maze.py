@@ -19,7 +19,7 @@ def random(a, b):
     result = b + 1
     i = state
     while (result == b+1):
-        result = ((seed + seed * state ** 3) ^ i) % (b+1)
+        result = ((seed ^ b + seed * state ** 3) ^ i) % (b+1)
         i += 1
         
     state += 1
